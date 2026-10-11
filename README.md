@@ -21,6 +21,18 @@ All of them give the same seven [tools](#tools) and use the same API key. The re
 (`https://xmltv.digital3d.com/mcp`) needs no installation; the local server runs on your machine and keeps a
 cache that saves requests (see [Local or remote](#local-or-remote)).
 
+## Downloads
+
+Version 1.0.10, from the [releases page](https://github.com/Digital3D/xmltv-mcp/releases/latest):
+
+| File | For |
+|---|---|
+| [xmltv-mcp-1.0.10-win-x64.mcpb](https://github.com/Digital3D/xmltv-mcp/releases/download/v1.0.10/xmltv-mcp-1.0.10-win-x64.mcpb) | [Claude Desktop](#claude-desktop-extension) on Windows x64 |
+| [xmltv-mcp-1.0.10-osx-arm64.mcpb](https://github.com/Digital3D/xmltv-mcp/releases/download/v1.0.10/xmltv-mcp-1.0.10-osx-arm64.mcpb) | [Claude Desktop](#claude-desktop-extension) on a Mac with Apple silicon |
+| [xmltv-mcp-1.0.10-linux-x64.tar.gz](https://github.com/Digital3D/xmltv-mcp/releases/download/v1.0.10/xmltv-mcp-1.0.10-linux-x64.tar.gz) | [Linux x64 without .NET](#linux-without-net), any client that starts a local command |
+
+The Claude Code plugin, the remote server and `dotnet dnx` need no download.
+
 ## Getting a key
 
 1. Create an account at <https://digital3d.com/Register>.
