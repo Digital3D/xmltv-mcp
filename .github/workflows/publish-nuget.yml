@@ -1,0 +1,44 @@
+# Publishes the XmltvDigital3d.Mcp package to nuget.org with Trusted Publishing: no API key is stored, nuget.org
+# trusts this workflow of this repository (policy of the owner "digital3d" on nuget.org) and hands it a key
+# that lives one hour. The .nupkg is not built here: it is the asset attached to the GitHub release named by
+# "tag", built by the Azure pipeline of the sources.
+name: Publish to nuget.org
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag whose .nupkg asset is published (for example v1.0.9)'
+        required: true
+        type: string
+
+permissions:
+  id-token: write   # the OIDC token nuget.org checks against the policy
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the .nupkg of the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          gh release download "${{ inputs.tag }}" --repo "${{ github.repository }}" --pattern '*.nupkg' --dir package
+          count=$(ls package/*.nupkg | wc -l)
+          if [ "$count" -ne 1 ]; then echo "Expected one .nupkg in the release, found $count"; exit 1; fi
+          ls -l package
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: NuGet login (Trusted Publishing)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: digital3d   # nuget.org profile name, not an e-mail address
+
+      - name: Push
+        run: dotnet nuget push package/*.nupkg --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
