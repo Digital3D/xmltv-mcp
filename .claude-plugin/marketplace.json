@@ -1,0 +1,19 @@
+{
+  "name": "digital3d",
+  "owner": {
+    "name": "Digital3D",
+    "url": "https://digital3d.com/contact"
+  },
+  "metadata": {
+    "description": "Plugins of Digital3D for Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "xmltv",
+      "source": "./plugins/xmltv",
+      "description": "French TV guide of xmltv.digital3d.com: channels, schedules, what is on air now, search and best rated programs.",
+      "category": "productivity",
+      "homepage": "https://xmltv.digital3d.com"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "xmltv",
+  "version": "1.0.1",
+  "description": "French TV guide of xmltv.digital3d.com: channels, schedules, what is on air now, search and best rated programs. Read-only, through the MCP server of the API.",
+  "author": {
+    "name": "Digital3D",
+    "url": "https://digital3d.com/contact"
+  },
+  "homepage": "https://xmltv.digital3d.com",
+  "keywords": ["tv", "xmltv", "tv-guide", "mcp"],
+  "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "XMLTV API key",
+      "description": "Your API key (a GUID), shown at https://digital3d.com/MyAccount once you have an account. Free: 10 requests per day; the subscription at https://digital3d.com/XmltvAbo?src=mcp gives more. Leave empty to use only the channel and category lists.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "mcpServers": {
+    "xmltv": {
+      "type": "http",
+      "url": "https://xmltv.digital3d.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${user_config.api_key}"
+      }
+    }
+  }
+}
