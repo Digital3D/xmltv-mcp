@@ -15,7 +15,7 @@ description or credits, and the best rated programs.
 | Codex (OpenAI) | [Remote server](#codex): three lines of configuration | nothing |
 | OpenAI API (Responses) | [Remote server as a tool](#openai-api): one `tools` entry | nothing |
 | ChatGPT | [Only the two free lists](#chatgpt): it cannot send a key | nothing |
-| Any MCP client that starts a local command | [Local server](#any-client-local-server): one block to paste | the .NET 10 SDK |
+| Any MCP client that starts a local command | [Local server](#any-client-local-server): one block to paste | the .NET 10 SDK, or the [standalone file for Linux](#linux-without-net) |
 
 All of them give the same seven [tools](#tools) and use the same API key. The remote server
 (`https://xmltv.digital3d.com/mcp`) needs no installation; the local server runs on your machine and keeps a
@@ -58,10 +58,11 @@ again.
 ## Claude Desktop: extension
 
 1. Download `xmltv-mcp-<version>-win-x64.mcpb` (Windows) or `xmltv-mcp-<version>-osx-arm64.mcpb` (Mac with Apple
-   silicon) from <https://github.com/digital3d/xmltv-mcp/releases>.
+   silicon) from <https://github.com/Digital3D/xmltv-mcp/releases>.
 2. Open it (or Settings → Extensions → Install extension), then type your API key in the form.
 
-The extension carries the local server: neither .NET nor a terminal is needed. On an Intel Mac or on Linux, use
+The extension carries the local server: neither .NET nor a terminal is needed. Claude Desktop exists for Windows
+and macOS only, hence no Linux file here. On an Intel Mac, use
 the [local server](#any-client-local-server) block in `claude_desktop_config.json` (Settings → Developer → Edit
 Config) and restart Claude Desktop.
 
@@ -173,6 +174,21 @@ claude mcp add xmltv --env XMLTV_API_KEY=<your-api-key> -- dotnet dnx XmltvDigit
 shorter `dnx` command on the `PATH` (Windows and macOS installers do, some Linux packages only link
 `dotnet`), `dnx XmltvDigital3d.Mcp --yes` is the same thing. Restart the client (or reconnect the server) after
 changing the key.
+
+### Linux without .NET
+
+Claude Desktop has no Linux version, so there is no `.mcpb` for Linux. For a local server without the .NET SDK,
+take `xmltv-mcp-<version>-linux-x64.tar.gz` from <https://github.com/Digital3D/xmltv-mcp/releases> (from version
+1.0.10): one self-contained executable. It is built for x64 Linux with glibc (not Alpine, not ARM) and needs the
+`libicu` and OpenSSL libraries, present on desktop distributions.
+
+```bash
+tar -xzf xmltv-mcp-<version>-linux-x64.tar.gz
+```
+
+Then point your client to the extracted file: `"command": "/path/to/xmltv-mcp"` without `args` in the block
+above, or `claude mcp add xmltv --env XMLTV_API_KEY=<your-api-key> -- /path/to/xmltv-mcp`. On Linux the
+[Claude Code plugin](#claude-code-plugin) and the [remote server](#any-client-remote-server) need nothing at all.
 
 ### Installed as a dotnet tool
 
