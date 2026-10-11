@@ -12,7 +12,9 @@ description or credits, and the best rated programs.
 | Claude Code, without a plugin | [Remote server](#claude-code-remote-server): one command | nothing |
 | Claude Desktop | [Extension](#claude-desktop-extension): one file to open | Windows x64 or a Mac with Apple silicon |
 | Any MCP client that sends HTTP headers | [Remote server](#any-client-remote-server): a URL and a header | nothing |
+| Codex (OpenAI) | [Remote server](#codex): three lines of configuration | nothing |
 | OpenAI API (Responses) | [Remote server as a tool](#openai-api): one `tools` entry | nothing |
+| ChatGPT | [Only the two free lists](#chatgpt): it cannot send a key | nothing |
 | Any MCP client that starts a local command | [Local server](#any-client-local-server): one block to paste | the .NET 10 SDK |
 
 All of them give the same seven [tools](#tools) and use the same API key. The remote server
@@ -86,6 +88,28 @@ The names of the fields depend on the client; what matters is the URL and the `A
 the same key as the REST API. Without the header, only the two free lists work. The server never answers 401:
 a missing or refused key is explained in the result of the tool.
 
+## Codex
+
+In `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.xmltv]
+url = "https://xmltv.digital3d.com/mcp"
+bearer_token_env_var = "XMLTV_API_KEY"
+```
+
+`bearer_token_env_var` is the name of an environment variable, not the key: set `XMLTV_API_KEY` to your key
+before starting Codex. The local server works too (requires the .NET 10 SDK, keeps a cache):
+
+```toml
+[mcp_servers.xmltv]
+command = "dotnet"
+args = ["dnx", "XmltvDigital3d.Mcp", "--yes"]
+env_vars = ["XMLTV_API_KEY"]
+```
+
+Both checked with Codex CLI 0.162.1 on 2026-10-11.
+
 ## OpenAI API
 
 MCP is an open standard: the Responses API of OpenAI takes the remote server as a tool, with your key in
@@ -110,7 +134,15 @@ curl https://api.openai.com/v1/responses \
 
 Two different keys: the one of OpenAI pays for the model, yours opens the TV guide. Without `headers`, the
 model still gets the two free lists and is told how to get a key. Checked with this request body on
-2026-10-11; other OpenAI products were not tried.
+2026-10-11.
+
+## ChatGPT
+
+ChatGPT can add the server (<https://chatgpt.com/plugins>, "Add custom MCP server", server URL
+`https://xmltv.digital3d.com/mcp`, "No authentication"), but it has no place for a personal key: OpenAI only
+offers OAuth or no authentication there, and this server has no OAuth. So `list_channels` and `list_categories`
+work, and the tools that need the key answer that it is missing. For programs in an OpenAI tool, use
+[Codex](#codex) or the [API](#openai-api). The same holds for a connector added by URL on claude.ai.
 
 ## Any client: local server
 
