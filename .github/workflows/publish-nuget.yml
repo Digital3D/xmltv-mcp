@@ -23,12 +23,17 @@ jobs:
       - name: Download the .nupkg of the release
         env:
           GH_TOKEN: ${{ github.token }}
+          # Passed as variables, never written into the script: a tag is typed by hand.
+          TAG: ${{ inputs.tag }}
+          REPO: ${{ github.repository }}
         run: |
           set -e
-          gh release download "${{ inputs.tag }}" --repo "${{ github.repository }}" --pattern '*.nupkg' --dir package
-          count=$(ls package/*.nupkg | wc -l)
-          if [ "$count" -ne 1 ]; then echo "Expected one .nupkg in the release, found $count"; exit 1; fi
+          # Only this package, at the version of the tag: a push to nuget.org cannot be undone.
+          expected="XmltvDigital3d.Mcp.${TAG#v}.nupkg"
+          gh release download "$TAG" --repo "$REPO" --pattern "$expected" --dir package
+          if [ ! -f "package/$expected" ]; then echo "The release $TAG has no asset named $expected"; exit 1; fi
           ls -l package
+          echo "NUPKG=package/$expected" >> "$GITHUB_ENV"
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -36,9 +41,10 @@ jobs:
 
       - name: NuGet login (Trusted Publishing)
         id: login
-        uses: NuGet/login@v1
+        # Pinned to a commit: this action receives the OIDC token and the key.
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
           user: digital3d   # nuget.org profile name, not an e-mail address
 
       - name: Push
-        run: dotnet nuget push package/*.nupkg --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "$NUPKG" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
