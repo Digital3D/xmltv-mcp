@@ -12,6 +12,7 @@ description or credits, and the best rated programs.
 | Claude Code, without a plugin | [Remote server](#claude-code-remote-server): one command | nothing |
 | Claude Desktop | [Extension](#claude-desktop-extension): one file to open | Windows x64 or a Mac with Apple silicon |
 | Any MCP client that sends HTTP headers | [Remote server](#any-client-remote-server): a URL and a header | nothing |
+| OpenAI API (Responses) | [Remote server as a tool](#openai-api): one `tools` entry | nothing |
 | Any MCP client that starts a local command | [Local server](#any-client-local-server): one block to paste | the .NET 10 SDK |
 
 All of them give the same seven [tools](#tools) and use the same API key. The remote server
@@ -84,6 +85,32 @@ Streamable HTTP, no session, nothing to install:
 The names of the fields depend on the client; what matters is the URL and the `Authorization: Bearer` header,
 the same key as the REST API. Without the header, only the two free lists work. The server never answers 401:
 a missing or refused key is explained in the result of the tool.
+
+## OpenAI API
+
+MCP is an open standard: the Responses API of OpenAI takes the remote server as a tool, with your key in
+`headers`.
+
+```bash
+curl https://api.openai.com/v1/responses \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-5.4-mini",
+    "tools": [{
+      "type": "mcp",
+      "server_label": "xmltv",
+      "server_url": "https://xmltv.digital3d.com/mcp",
+      "headers": { "Authorization": "Bearer <your-api-key>" },
+      "require_approval": "never"
+    }],
+    "input": "What is on air now on TF1?"
+  }'
+```
+
+Two different keys: the one of OpenAI pays for the model, yours opens the TV guide. Without `headers`, the
+model still gets the two free lists and is told how to get a key. Checked with this request body on
+2026-10-11; other OpenAI products were not tried.
 
 ## Any client: local server
 
